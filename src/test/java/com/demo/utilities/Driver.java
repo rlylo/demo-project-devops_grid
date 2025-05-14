@@ -16,18 +16,18 @@ import java.time.Duration;
 
 public class Driver {
 
-    private Driver(){}
-
+    private Driver() {
+    }
 
 
     private static ThreadLocal<WebDriver> driverPool = new ThreadLocal<>();
 
-    public static WebDriver getDriver(){
-        if(driverPool.get() == null){
-            String browserType = System.getProperty("browser") !=null?System.getProperty("browser"): ConfigurationReader.getProperty("browser");
-           // String gridUrl = System.getProperty("GRID_URL")!=null?ConfigurationReader.getProperty("local.grid"): ConfigurationReader.getProperty("grid.url");
-            String gridUrl = ConfigurationReader.getProperty("local.grid");
-            switch (browserType){
+    public static WebDriver getDriver() {
+        if (driverPool.get() == null) {
+            String browserType = System.getProperty("browser") != null ? System.getProperty("browser") : ConfigurationReader.getProperty("browser");
+            // String gridUrl = System.getProperty("GRID_URL")!=null?ConfigurationReader.getProperty("local.grid"): ConfigurationReader.getProperty("grid.url");
+            String gridUrl = ConfigurationReader.getProperty("grid.url");
+            switch (browserType) {
                 case "chrome" -> {
                     ChromeOptions options = new ChromeOptions();
                     options.addArguments("--start-maximized");
@@ -50,12 +50,12 @@ public class Driver {
                     options.addArguments("--headless");
                     driverPool.set(new FirefoxDriver(options));
                 }
-                case "remote-chrome"->{
+                case "remote-chrome" -> {
                     DesiredCapabilities capabilities = new DesiredCapabilities();
                     capabilities.setBrowserName("chrome");
 
                     try {
-                   driverPool.set(new RemoteWebDriver(new URL(ConfigurationReader.getProperty("local.grid")+"/wd/hub"), capabilities));
+                        driverPool.set(new RemoteWebDriver(new URL(ConfigurationReader.getProperty("local.grid") + "/wd/hub"), capabilities));
                     } catch (MalformedURLException e) {
 
                     }
@@ -63,7 +63,7 @@ public class Driver {
                 }
 
 
-                case "remote-firefox"->{
+                case "remote-firefox" -> {
                     DesiredCapabilities firefox = new DesiredCapabilities();
                     firefox.setBrowserName("firefox");
 
@@ -76,13 +76,12 @@ public class Driver {
                 }
 
 
-
-                case "remote-chrome-aws"->{
+                case "remote-chrome-aws" -> {
                     ChromeOptions remoteOptions = new ChromeOptions();
                     remoteOptions.addArguments("--start-maximized");
                     //remoteOptions.addArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu");
                     try {
-                        driverPool.set(new RemoteWebDriver(new URL(gridUrl+"/wd/hub"), remoteOptions));
+                        driverPool.set(new RemoteWebDriver(new URL(gridUrl), remoteOptions));
                     } catch (MalformedURLException e) {
 
                     }
@@ -90,11 +89,11 @@ public class Driver {
                 }
 
 
-                case "remote-firefox-aws"->{
+                case "remote-firefox-aws" -> {
                     FirefoxOptions firefoxOptions1 = new FirefoxOptions();
                     firefoxOptions1.addArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu");
                     try {
-                        driverPool.set( new RemoteWebDriver(new URL(gridUrl+"/wd/hub"), firefoxOptions1));
+                        driverPool.set(new RemoteWebDriver(new URL(gridUrl + "/wd/hub"), firefoxOptions1));
                     } catch (MalformedURLException e) {
 
                     }
@@ -108,8 +107,8 @@ public class Driver {
 
     }
 
-    public static void closeDriver(){
-        if (driverPool.get()!=null){
+    public static void closeDriver() {
+        if (driverPool.get() != null) {
             driverPool.get().quit();
             driverPool.remove();
         }
